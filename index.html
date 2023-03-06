@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Page</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <h1>Product page</h1>
+
+    <a href="./compare.html">Compare</a>
+
+    <input
+      id="searchbar"
+      onkeyup="searchProducts()"
+      type="text"
+      name="search"
+      placeholder="Search products.."
+    />
+
+    <br />
+    <br />
+
+    <input
+      id="asyncSearch"
+      type="text"
+      name="search"
+      placeholder="Async Search products.."
+    />
+    <button id="search-button">Search</button>
+
+    <!-- select category -->
+    <label for="bike">Choose category:</label>
+    <select name="bike" id="bike-category"></select>
+
+    <!-- radio select -->
+    <div class="container">
+      <label for="compare">Compare</label><br />
+      <div class="row">
+        <input type="radio" class="row" id="compareEnabled" name="compare" value="compare_enable" checked><span>Yes</span></input>
+      </div>
+      <div class="row">
+        <input type="radio" class="row" id="compareDisabled" name="compare" value="compare_disable"><span>No</span></input>
+      </div>
+    </div>
+    <div class="card-container" id="container"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
