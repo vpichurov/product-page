@@ -70,8 +70,7 @@
 
 .card-compare-description {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: column;  
 }
 
 .item {
@@ -92,10 +91,6 @@
   margin-top: 0.5rem;
 }
 
-.remove-item-empty {
-  padding: 1.3em;
-}
-
 [class^="box-"] {
   background-color: aquamarine;
 }
@@ -105,15 +100,15 @@
 }
 
 .twoProducts {
-  grid-template-columns: 100px 1fr 1fr;
+  grid-template-columns: 100px repeat(2, 300px);
 }
 
 .threeProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr;
+  grid-template-columns: 100px repeat(3, 300px);
 }
 
 .fourProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr;
+  grid-template-columns: 100px repeat(4, 300px);
 }
 
 .fiveProducts {

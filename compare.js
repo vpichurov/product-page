@@ -23,8 +23,7 @@ fetch("./products.json")
       </div>
       <div class="item">Product</div>
       <div class="item">Price</div>
-      <div class="item">Category</div>
-      <div class="remove-item-empty"></div>
+      <div class="item">Category</div>      
     </div>
     `;
 
