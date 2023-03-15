@@ -51,14 +51,17 @@
   flex-direction: row;
 }
 
+:root {
+  --ItemPerCol: 2;
+}
+
 .compare-list {
   display: grid;
-
   grid-template-rows: 3fr 1fr 1fr 1fr 1fr;
-  grid-template-columns: 100px 1fr;
+  grid-template-columns: 100px repeat(var(--ItemPerCol), 300px);
   gap: 0.5rem;
   padding: 1em;
-  height: 60vh;
+  height: 50vh;
 }
 
 .card-compare {
@@ -70,7 +73,7 @@
 
 .card-compare-description {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
 }
 
 .item {
@@ -91,46 +94,21 @@
   margin-top: 0.5rem;
 }
 
-[class^="box-"] {
-  background-color: aquamarine;
+a:link,
+a:visited {
+  background-color: transparent;
+  border: 3px solid lightgray;
+  border-radius: 5px;
+  color: black;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 1em;
 }
 
-.oneProduct {
-  grid-template-columns: 100px 1fr;
-}
-
-.twoProducts {
-  grid-template-columns: 100px repeat(2, 300px);
-}
-
-.threeProducts {
-  grid-template-columns: 100px repeat(3, 300px);
-}
-
-.fourProducts {
-  grid-template-columns: 100px repeat(4, 300px);
-}
-
-.fiveProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr;
-}
-
-.sixProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.sevenProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.eightProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.nineProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.tenProducts {
-  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+a:hover,
+a:active {
+  background-color: transparent;
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.75);
 }
