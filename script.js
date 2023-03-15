@@ -219,3 +219,5 @@ setTimeout(() => {
   // Call the function to set the checked property of the checkboxes on page load
   setCheckboxStateFromLocalStorage();
 }, 100);
+
+const selectAllCheckboxes = document.querySelector(".select-all");
