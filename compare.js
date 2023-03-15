@@ -1,6 +1,6 @@
-const compareList = document.getElementsByClassName("compare-list");
 const removeFromWishlist = document.getElementsByClassName("remove-item");
 const compareContainer = document.getElementsByClassName("compare-list");
+const columnCount = document.documentElement;
 
 let localStorageKeys = [];
 
@@ -18,7 +18,18 @@ fetch("./products.json")
   })
   .then((json) => {
     let data = json;
-    compareContainer[0].innerHTML = ``;
+    compareContainer[0].innerHTML = `
+    <div class="card-compare-description">
+      <div class="compare-image">
+      </div>
+      <div class="item">Product</div>
+      <div class="item">Price</div>
+      <div class="item">Category</div>      
+    </div>
+    `;
+
+    columnCount.style.setProperty("--ItemPerCol", localStorageKeys.length);
+
     localStorageKeys.forEach((key) => {
       data.forEach((element) => {
         if (element.category.id === +key) {
@@ -31,6 +42,7 @@ fetch("./products.json")
                 <button class="remove-item">Remove from wishlist</button>
             </div>
             `;
+
           compareContainer[0].innerHTML += result;
         }
       });
