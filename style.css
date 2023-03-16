@@ -51,16 +51,29 @@
   flex-direction: row;
 }
 
+:root {
+  --ItemPerCol: 2;
+}
+
 .compare-list {
-  display: flex;
+  display: grid;
+  grid-template-rows: 3fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 100px repeat(var(--ItemPerCol), 300px);
   gap: 0.5rem;
   padding: 1em;
+  height: 50vh;
 }
 
 .card-compare {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: 300px;
+}
+
+.card-compare-description {
+  display: flex;
+  flex-direction: column;
 }
 
 .item {
@@ -79,4 +92,23 @@
 .remove-item {
   padding: 0.5rem;
   margin-top: 0.5rem;
+}
+
+a:link,
+a:visited {
+  background-color: transparent;
+  border: 3px solid lightgray;
+  border-radius: 5px;
+  color: black;
+  padding: 14px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 1em;
+}
+
+a:hover,
+a:active {
+  background-color: transparent;
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.75);
 }
