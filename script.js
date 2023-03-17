@@ -226,10 +226,16 @@ selectAll.addEventListener("change", (e) => {
   if (e.target.checked === true) {
     for (let i = 0; i < compareProducts.length; i++) {
       compareProducts[i].checked = true;
+      let dataId =
+        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
+      localStorage.setItem(dataId, "Test");
     }
   } else {
     for (let i = 0; i < compareProducts.length; i++) {
       compareProducts[i].checked = false;
+      let dataId =
+        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
+      localStorage.removeItem(dataId);
     }
   }
 });
