@@ -220,4 +220,16 @@ setTimeout(() => {
   setCheckboxStateFromLocalStorage();
 }, 100);
 
-const selectAllCheckboxes = document.querySelector(".select-all");
+const selectAll = document.getElementById("selectAll");
+
+selectAll.addEventListener("change", (e) => {
+  if (e.target.checked === true) {
+    for (let i = 0; i < compareProducts.length; i++) {
+      compareProducts[i].checked = true;
+    }
+  } else {
+    for (let i = 0; i < compareProducts.length; i++) {
+      compareProducts[i].checked = false;
+    }
+  }
+});
