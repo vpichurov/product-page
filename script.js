@@ -230,6 +230,7 @@ selectAll.addEventListener("change", (e) => {
         compareProducts[i].parentElement.parentElement.getAttribute("data-id");
       localStorage.setItem(dataId, "Test");
     }
+    localStorage.setItem("checkboxSelectAll", selectAll.checked);
   } else {
     for (let i = 0; i < compareProducts.length; i++) {
       compareProducts[i].checked = false;
@@ -237,5 +238,11 @@ selectAll.addEventListener("change", (e) => {
         compareProducts[i].parentElement.parentElement.getAttribute("data-id");
       localStorage.removeItem(dataId);
     }
+    // localStorage.setItem("checkboxSelectAll", (selectAll.checked = false));
+    localStorage.removeItem("checkboxSelectAll");
   }
+});
+
+addEventListener("load", () => {
+  selectAll.checked = localStorage.getItem("checkboxSelectAll");
 });
