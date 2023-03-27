@@ -219,3 +219,30 @@ setTimeout(() => {
   // Call the function to set the checked property of the checkboxes on page load
   setCheckboxStateFromLocalStorage();
 }, 100);
+
+const selectAll = document.getElementById("selectAll");
+
+selectAll.addEventListener("change", (e) => {
+  if (e.target.checked === true) {
+    for (let i = 0; i < compareProducts.length; i++) {
+      compareProducts[i].checked = true;
+      let dataId =
+        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
+      localStorage.setItem(dataId, "Test");
+    }
+    localStorage.setItem("checkboxSelectAll", selectAll.checked);
+  } else {
+    for (let i = 0; i < compareProducts.length; i++) {
+      compareProducts[i].checked = false;
+      let dataId =
+        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
+      localStorage.removeItem(dataId);
+    }
+    // localStorage.setItem("checkboxSelectAll", (selectAll.checked = false));
+    localStorage.removeItem("checkboxSelectAll");
+  }
+});
+
+addEventListener("load", () => {
+  selectAll.checked = localStorage.getItem("checkboxSelectAll");
+});
