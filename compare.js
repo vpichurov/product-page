@@ -1,3 +1,4 @@
+import { fetchProducts } from "./common.js";
 const removeFromWishlist = document.getElementsByClassName("remove-item");
 const compareContainer = document.getElementsByClassName("compare-list");
 const columnCount = document.documentElement;
@@ -9,31 +10,24 @@ for (let i = 0; i < localStorage.length; i++) {
   localStorageKeys.push(key);
 }
 
-fetch("./products.json")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Http error " + response.status);
-    }
-    return response.json();
-  })
-  .then((json) => {
-    let data = json;
-    compareContainer[0].innerHTML = `
+fetchProducts().then((json) => {
+  let data = json;
+  compareContainer[0].innerHTML = `
     <div class="card-compare-description">
       <div class="compare-image">
       </div>
       <div class="item">Product</div>
       <div class="item">Price</div>
-      <div class="item">Category</div>      
+      <div class="item">Category</div>
     </div>
     `;
 
-    columnCount.style.setProperty("--ItemPerCol", localStorageKeys.length);
+  columnCount.style.setProperty("--ItemPerCol", localStorageKeys.length);
 
-    localStorageKeys.forEach((key) => {
-      data.forEach((element) => {
-        if (element.category.id === +key) {
-          let result = `
+  localStorageKeys.forEach((key) => {
+    data.forEach((element) => {
+      if (element.category.id === +key) {
+        let result = `
             <div class="card-compare" data-id="${element.category.id}">
                 <img src="${element.productImage}" alt="productPicture" class="compare-image" />
                 <div class="item">${element.productTitle}</div>
@@ -43,11 +37,11 @@ fetch("./products.json")
             </div>
             `;
 
-          compareContainer[0].innerHTML += result;
-        }
-      });
+        compareContainer[0].innerHTML += result;
+      }
     });
   });
+});
 
 setTimeout(() => {
   Array.from(removeFromWishlist).forEach((button) => {
