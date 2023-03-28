@@ -1,8 +1,15 @@
 import { fetchProducts } from "./common.js";
 
+/* const cardContainer = document.getElementsByClassName("card-container");
+ навсякъде след това ползваш cardContainer[0] => document.querySelector
+ и след това директно ше ползваш cardContainer
 
+ bikesContainer е неясно => bikesContainer
+*/
 const bikesContainer = document.querySelector(".js-card-container");
 
+// попълваш един продукт => populateProduct без s накрая
+//const populateProducts = (product) => {
 const populateProduct = (product) => {
   return `
         <div class="card" data-id="${product.category.id}">
@@ -18,6 +25,14 @@ const populateProduct = (product) => {
         `;
 };
 
+// неясно е какво прави следващия код => променям го на populateBikeList
+/*fetchProducts().then((data) => {
+  for (let index of data) {
+    const card = populateProducts(index);
+    cardContainer.innerHTML += card;
+  }
+});*/
+
 function populateBikeList() {
   fetchProducts().then((data) => {
     for (let bikeData of data) {
@@ -28,8 +43,26 @@ function populateBikeList() {
 }
 populateBikeList();
 
+// searchProducts не е ясно каква е разликата с другия сърч
+// сменям го на showHideProductsBySearchPhrase
+/*function searchProducts() {
+  let input = document.getElementById("searchbar").value;
+  input.toLowerCase();
+  const productsCard = document.getElementsByClassName("card");
+  const productName = document.getElementsByClassName("product-title");
 
-//show/hide filter
+  for (let i = 0; i < productsCard.length; i++) {
+    if (!productName[i].innerHTML.toLowerCase().includes(input)) {
+      productsCard[i].classList.add("hide");
+    } else {
+      productsCard[i].classList.remove("hide");
+    }
+  }
+}*/
+
+/* в index.html имаш onkeyup="searchProducts()" но това вече се прави рядко
+винаги когато можеш го правиш с event listener в js-a*/
+
 function showHideResultsBySearchPhrase() {  
   let input = this.value;
   input.toLowerCase();
@@ -52,7 +85,44 @@ function initShowHideResultsBySearchPhrase(){
 initShowHideResultsBySearchPhrase();
 
 
-// ajax filter
+// следващия код е неясен какво прави => initFilterResultsByAjaxRequest
+
+/*
+// async search through json
+
+const button = document.getElementById("search-button");
+const input = document.getElementById("asyncSearch");
+
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    const container = document.getElementById("container");
+
+    let loader = `<div class="boxLoading"></div>`;
+    container.innerHTML = loader;
+
+    fetchProducts()
+      .then((json) => {
+        let data = json;
+
+        let input = document.getElementById("asyncSearch").value;
+        input.toLowerCase();
+
+        data.forEach((product) => {
+          if (product.productTitle.toLowerCase().includes(input)) {
+            let result = populateProduct(product);
+            container.innerHTML += result;
+            container.removeChild(container.firstChild);
+          }
+        });
+      })
+      .catch(function () {
+        this.dataError = true;
+      });
+  }
+});*/
+
 function initFilterResultsByAjaxRequest(){
 
   // TODO querySelectAll
@@ -86,9 +156,11 @@ function initFilterResultsByAjaxRequest(){
   input.addEventListener("keyup", filterResultsByAjaxRequest);
   button.addEventListener("click", filterResultsByAjaxRequest);
 }
+
 initFilterResultsByAjaxRequest();
 
-// populate categories in dropdown
+// category dropdown
+// неясно => populateCategoriesInDropdown
 const categoryDropdown = document.getElementById("bike-category");
 function populateCategoriesInDropdown(){
   let lookup = {};
@@ -118,7 +190,8 @@ function populateCategoriesInDropdown(){
 }
 populateCategoriesInDropdown();
 
-//init dropdown filter change event
+// dropdown filter
+
 categoryDropdown.addEventListener("change", () => {
   let selectedValue = document.getElementById("bike-category");
   let input = selectedValue.value;
@@ -135,7 +208,23 @@ categoryDropdown.addEventListener("change", () => {
   });
 });
 
-// compare checkbox enable/disable
+// compare enable
+/*radioChecked.addEventListener("change", () => {
+  if (radioChecked.checked) {
+    Array.from(compareProducts).forEach((el) => {
+      el.disabled = false;
+    });
+  }
+});
+
+radioUnchecked.addEventListener("change", () => {
+  if (radioUnchecked.checked) {
+    Array.from(compareProducts).forEach((el) => {
+      el.disabled = true;
+    });
+  }
+});*/
+
 function getCompareCheckboxes(){
   return document.querySelectorAll(".js-compare-product");
 }
@@ -171,6 +260,23 @@ function setCheckboxStateFromLocalStorage() {
 }
 
 // Update local storage and set the checked property of the checkboxes on change
+/*setTimeout(() => {
+  compareCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", (event) => {
+      const cardEl = checkbox.parentElement.parentElement;
+      const dataId = cardEl.getAttribute("data-id");
+
+      if (event.target.checked) {
+        localStorage.setItem(dataId, "Test");
+      } else {
+        localStorage.removeItem(dataId);
+      }
+    });
+  });
+  // Call the function to set the checked property of the checkboxes on page load
+  setCheckboxStateFromLocalStorage();
+}, 100);*/
+
 function initCompare() {
   getCompareCheckboxes().forEach((checkbox) => {
     checkbox.addEventListener("change", (event) => {
@@ -190,7 +296,6 @@ function initCompare() {
 
 setTimeout(initCompare, 1000);
 
-// init select all functionality
 function initSelectAll() {
   const selectAll = document.getElementById("selectAll");
 
