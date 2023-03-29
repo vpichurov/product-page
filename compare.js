@@ -1,4 +1,4 @@
-import { fetchProducts } from "./common.js";
+import { loader, fetchProducts } from "./common.js";
 const removeFromWishlist = document.getElementsByClassName("remove-item");
 const compareContainer = document.getElementsByClassName("compare-list");
 const columnCount = document.documentElement;
@@ -9,6 +9,8 @@ for (let i = 0; i < localStorage.length; i++) {
   let key = localStorage.key(i);
   localStorageKeys.push(key);
 }
+
+loader.addLoader('.compare-list');
 
 fetchProducts().then((json) => {
   let data = json;
@@ -21,7 +23,7 @@ fetchProducts().then((json) => {
       <div class="item">Category</div>
     </div>
     `;
-
+  loader.addLoader('.compare-list');
   columnCount.style.setProperty("--ItemPerCol", localStorageKeys.length);
 
   localStorageKeys.forEach((key) => {
@@ -41,7 +43,25 @@ fetchProducts().then((json) => {
       }
     });
   });
+}).finally(function () {    
+  loader.removeLoader('.compare-list');
 });
+
+function initRemoveFromWishListBtns(){
+  Array.from(removeFromWishlist).forEach((button) => {
+    button.addEventListener("click", (element) => {
+      const itemToRemove = element.srcElement.parentElement;
+      const dataId = itemToRemove.getAttribute("data-id");
+
+      for (let i = 0; i < localStorage.length; i++) {
+        if (dataId === localStorage.key(i)) {
+          localStorage.removeItem(dataId);
+        }
+      }
+      itemToRemove.remove();
+    });
+  });
+} 
 
 setTimeout(() => {
   Array.from(removeFromWishlist).forEach((button) => {
@@ -58,3 +78,5 @@ setTimeout(() => {
     });
   });
 }, 100);
+
+setTimeout(initRemoveFromWishListBtns, 100)

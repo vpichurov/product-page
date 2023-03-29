@@ -1,4 +1,4 @@
-import { fetchProducts } from "./common.js";
+import { loader, fetchProducts } from "./common.js";
 
 
 const bikesContainer = document.querySelector(".js-card-container");
@@ -18,13 +18,26 @@ const populateProduct = (product) => {
         `;
 };
 
+function fetchProductsAfterCallback() {
+  loader.removeLoader(".js-card-container");
+  initCompare();
+}
+
+function fetchProductsBeforeCallback() {
+  loader.addLoader(".js-card-container");
+}
+
 function populateBikeList() {
+  fetchProductsBeforeCallback();
   fetchProducts().then((data) => {
     for (let bikeData of data) {
       const bikeCard = populateProduct(bikeData);
       bikesContainer.innerHTML += bikeCard;
     }
-  });
+  })
+  .finally(function () {    
+    fetchProductsAfterCallback();
+  });;
 }
 populateBikeList();
 
@@ -51,7 +64,6 @@ function initShowHideResultsBySearchPhrase(){
 }
 initShowHideResultsBySearchPhrase();
 
-
 // ajax filter
 function initFilterResultsByAjaxRequest(){
 
@@ -60,9 +72,8 @@ function initFilterResultsByAjaxRequest(){
   const input = document.getElementById("asyncSearch");
 
   function filterResultsByAjaxRequest(){
-      let loader = `<div class="boxLoading"></div>`;
-      bikesContainer.innerHTML = loader;
-
+      
+      fetchProductsBeforeCallback();
       fetchProducts().then((data) => {
         
           let inputVal = input.value.toLowerCase();
@@ -79,7 +90,7 @@ function initFilterResultsByAjaxRequest(){
           this.dataError = true;
         })
         .finally(function () {
-          bikesContainer.removeChild(bikesContainer.firstChild);
+          fetchProductsAfterCallback();
         });
   }
 
@@ -119,7 +130,7 @@ function populateCategoriesInDropdown(){
 populateCategoriesInDropdown();
 
 //init dropdown filter change event
-categoryDropdown.addEventListener("change", () => {
+/*categoryDropdown.addEventListener("change", () => {
   let selectedValue = document.getElementById("bike-category");
   let input = selectedValue.value;
 
@@ -133,7 +144,7 @@ categoryDropdown.addEventListener("change", () => {
       }
     });
   });
-});
+});*/
 
 // compare checkbox enable/disable
 function getCompareCheckboxes(){
@@ -188,7 +199,7 @@ function initCompare() {
   setCheckboxStateFromLocalStorage();
 }
 
-setTimeout(initCompare, 1000);
+//setTimeout(initCompare, 1000);
 
 // init select all functionality
 function initSelectAll() {
