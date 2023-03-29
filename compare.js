@@ -47,8 +47,8 @@ function appendCompareProduct(product) {
   compareContainer[0].innerHTML += product;
 }
 
-fetchProducts()
-  .then((json) => {
+function populateWishListProducts() {
+  return fetchProducts().then((json) => {
     let data = json;
     setFirstColumnOfCompareProductTable();
     loader.addLoader(".compare-list");
@@ -61,10 +61,13 @@ fetchProducts()
         }
       });
     });
-  })
-  .finally(function () {
-    loader.removeLoader(".compare-list");
   });
+}
+
+populateWishListProducts().finally(function () {
+  loader.removeLoader(".compare-list");
+  removeFromWishList();
+});
 
 function removeFromWishList() {
   const removeFromWishlistButton =
@@ -83,5 +86,3 @@ function removeFromWishList() {
     });
   });
 }
-
-setTimeout(removeFromWishList, 100);
