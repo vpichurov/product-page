@@ -9,46 +9,57 @@
   </head>
   <body>
     <h1>Product page</h1>
+    <div class="filter-container js-filter-container">
+      <div class="centered-filters">      
+          <a href="./compare.html">Compare</a>
+          <br />
+          <br />
 
-    <a href="./compare.html">Compare</a>
+          <input      
+            class="js-search-bar"      
+            type="text"
+            name="search"
+            placeholder="Show/hide products.."
+          />
+          <br />
+          <br />
 
-    <input
-      id="searchbar"
-      onkeyup="searchProducts()"
-      type="text"
-      name="search"
-      placeholder="Search products.."
-    />
-    <br />
-    <br />
-
-    <input
-      id="asyncSearch"
-      type="text"
-      name="search"
-      placeholder="Async Search products.."
-    />
-    <button id="search-button">Search</button>
-    here goes new text
-    <!-- select category -->
-    <label for="bike">Choose category:</label>
-    <select name="bike" id="bike-category"></select>
-    new change
-    <!-- radio select -->
-    <div class="container">
-      <label for="compare">Compare</label><br />
-      <div class="row">
-        <input type="radio" class="row" id="compareEnabled" name="compare" value="compare_enable" checked><span>Yes</span></input>
+          <input
+            id="asyncSearch"
+            class="js-asyncSearch"
+            type="text"
+            name="search"
+            placeholder="Async Search products.."
+          />
+          <button id="search-button" class="js-search-button">Search</button>
+          
+          <br />
+          <br />
+          <!-- select category -->
+          <label for="bike">Choose category:</label>
+          <select name="bike" id="bike-category" class="js-bike-category"></select>
+          <br />
+          <br />
+          
+          <!-- radio select -->
+          <div class="enable-compare-container">
+            <label>Enable compare buttons</label><br />
+            <div class="row">
+              <input type="radio" class="row js-compare-enable" id="compareEnabled" name="compare" value="compare_enable" checked><label for="compareEnabled">Yes</label></input>
+            </div>
+            <div class="row">
+              <input type="radio" class="row js-compare-enable" id="compareDisabled" name="compare" value="compare_disable"><label for="compareDisabled">No</label></input>
+            </div>   
+          </div>
+          <br />
+          <label for="selectAll">Select all</label>
+          <input type="checkbox" name="selectAll" id="selectAll" class="js-selectAll" data-id="selectAll">
       </div>
-      <div class="row">
-        <input type="radio" class="row" id="compareDisabled" name="compare" value="compare_disable"><span>No</span></input>
-      </div>   
     </div>
-    <label for="selectAll">Select all</label>
-    <input type="checkbox" name="selectAll" id="selectAll" data-id="selectAll">
     
-    <div class="card-container" id="container"></div>
-
-    <script src="script.js"></script>
+    <div class="js-card-container card-container" id="container"></div>
+    
+    <script type="module" src="common.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>

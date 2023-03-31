@@ -1,39 +1,37 @@
-const removeFromWishlist = document.getElementsByClassName("remove-item");
+import { loader, fetchProducts } from "./common.js";
+
 const compareContainer = document.getElementsByClassName("compare-list");
-const columnCount = document.documentElement;
 
-let localStorageKeys = [];
-
-for (let i = 0; i < localStorage.length; i++) {
-  let key = localStorage.key(i);
-  localStorageKeys.push(key);
+function getLocalStoareKeys() {
+  let localStorageKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    localStorageKeys.push(key);
+  }
+  return localStorageKeys;
 }
 
-fetch("./products.json")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Http error " + response.status);
-    }
-    return response.json();
-  })
-  .then((json) => {
-    let data = json;
-    compareContainer[0].innerHTML = `
-    <div class="card-compare-description">
-      <div class="compare-image">
-      </div>
-      <div class="item">Product</div>
-      <div class="item">Price</div>
-      <div class="item">Category</div>      
+loader.addLoader(".compare-list");
+
+function setFirstColumnOfCompareProductTable() {
+  compareContainer[0].innerHTML = `
+  <div class="card-compare-description">
+    <div class="compare-image">
     </div>
-    `;
+    <div class="item">Product</div>
+    <div class="item">Price</div>
+    <div class="item">Category</div>
+  </div>
+  `;
+}
 
-    columnCount.style.setProperty("--ItemPerCol", localStorageKeys.length);
+function setLengthOfCompareTable() {
+  const columnCount = document.documentElement;
+  columnCount.style.setProperty("--ItemPerCol", getLocalStoareKeys().length);
+}
 
-    localStorageKeys.forEach((key) => {
-      data.forEach((element) => {
-        if (element.category.id === +key) {
-          let result = `
+function generateSingleCompareProduct(element) {
+  let result = `
             <div class="card-compare" data-id="${element.category.id}">
                 <img src="${element.productImage}" alt="productPicture" class="compare-image" />
                 <div class="item">${element.productTitle}</div>
@@ -42,15 +40,39 @@ fetch("./products.json")
                 <button class="remove-item">Remove from wishlist</button>
             </div>
             `;
+  return result;
+}
 
-          compareContainer[0].innerHTML += result;
+function appendCompareProduct(product) {
+  compareContainer[0].innerHTML += product;
+}
+
+function populateWishListProducts() {
+  return fetchProducts().then((json) => {
+    let data = json;
+    setFirstColumnOfCompareProductTable();
+    loader.addLoader(".compare-list");
+    setLengthOfCompareTable();
+    getLocalStoareKeys().forEach((key) => {
+      data.forEach((element) => {
+        if (element.category.id === +key) {
+          let singleProduct = generateSingleCompareProduct(element);
+          appendCompareProduct(singleProduct);
         }
       });
     });
   });
+}
 
-setTimeout(() => {
-  Array.from(removeFromWishlist).forEach((button) => {
+populateWishListProducts().finally(function () {
+  loader.removeLoader(".compare-list");
+  removeFromWishList();
+});
+
+function removeFromWishList() {
+  const removeFromWishlistButton =
+    document.getElementsByClassName("remove-item");
+  Array.from(removeFromWishlistButton).forEach((button) => {
     button.addEventListener("click", (element) => {
       const itemToRemove = element.srcElement.parentElement;
       const dataId = itemToRemove.getAttribute("data-id");
@@ -63,4 +85,4 @@ setTimeout(() => {
       itemToRemove.remove();
     });
   });
-}, 100);
+}

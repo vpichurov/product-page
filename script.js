@@ -1,43 +1,60 @@
-async function fetchProducts() {
-  try {
-    const response = await fetch("./products.json");
-    if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Could not get products: ${error}`);
-  }
-}
+import { loader, fetchProducts } from "./common.js";
 
-const cardContainer = document.getElementsByClassName("card-container");
+const bikesContainer = document.querySelector(".js-card-container");
 
-const promise = fetchProducts();
-
-promise.then((data) => {
-  for (index of data) {
-    const card = `
-        <div class="card" data-id="${index.category.id}">
-            <img src="${index.productImage}" alt="bike" class="product-image" />
-            <h3 class="product-title">${index.productTitle}</h3>
-            <h2 class="product-price">Price: ${index.price}</h2>
-            <p class="product-category">Category: ${index.category.label}</p>
+const populateProduct = (product) => {
+  return `
+        <div class="card js-card" data-id="${product.category.id}">
+            <img src="${product.productImage}" alt="bike" class="product-image js-product-image" />
+            <h3 class="product-title js-product-title">${product.productTitle}</h3>
+            <h2 class="product-price js-product-price">Price: ${product.price}</h2>
+            <p class="product-category js-product-category">Category: ${product.category.label}</p>
             <div class="row">
               <label for="compare">Compare</label>
-              <input type="checkbox" class="compareProduct"/>
+              <input type="checkbox" class="js-compare-product compareProduct"/>
             </div>  
         </div>
         `;
-    cardContainer[0].innerHTML += card;
-  }
-});
+};
 
-function searchProducts() {
-  let input = document.getElementById("searchbar").value;
+function fetchProductsAfterCallback() {
+  loader.removeLoader(".js-card-container");
+  initCompare();
+}
+
+function clearResults() {
+  const cardContainer = document.querySelector(".js-card-container");
+
+  return (cardContainer.innerHTML = ``);
+}
+
+function fetchProductsBeforeCallback() {
+  clearResults();
+  loader.addLoader(".js-card-container");
+}
+
+function populateBikeList() {
+  fetchProductsBeforeCallback();
+  fetchProducts()
+    .then((data) => {
+      for (let bikeData of data) {
+        const bikeCard = populateProduct(bikeData);
+        bikesContainer.innerHTML += bikeCard;
+      }
+    })
+    .finally(function () {
+      fetchProductsAfterCallback();
+    });
+}
+populateBikeList();
+
+//show/hide filter
+function showHideResultsBySearchPhrase() {
+  let input = this.value;
   input.toLowerCase();
-  let productsCard = document.getElementsByClassName("card");
-  let productName = document.getElementsByClassName("product-title");
+  //TODO replace document.getElementsByClassName s querySelectorAll s parent js-card-container
+  const productsCard = document.querySelectorAll(".js-card");
+  const productName = document.querySelectorAll(".js-product-title");
 
   for (let i = 0; i < productsCard.length; i++) {
     if (!productName[i].innerHTML.toLowerCase().includes(input)) {
@@ -48,73 +65,54 @@ function searchProducts() {
   }
 }
 
-// async search through json
+function initShowHideResultsBySearchPhrase() {
+  document
+    .querySelector(".js-search-bar")
+    .addEventListener("keyup", showHideResultsBySearchPhrase);
+}
+initShowHideResultsBySearchPhrase();
 
-let button = document.getElementById("search-button");
-let input = document.getElementById("asyncSearch");
+// ajax filter
+function initFilterResultsByAjaxRequest() {
+  // TODO querySelectAll
+  const button = document.querySelector(".js-search-button");
+  const input = document.querySelector(".js-asyncSearch");
 
-input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-
-    const container = document.getElementById("container");
-
-    let loader = `<div class="boxLoading"></div>`;
-    container.innerHTML = loader;
-
-    fetch("./products.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("HTTP error " + response.status);
-        }
-        return response.json();
-      })
-      .then((json) => {
-        let data = json;
-
-        let input = document.getElementById("asyncSearch").value;
-        input.toLowerCase();
+  function filterResultsByAjaxRequest() {
+    fetchProductsBeforeCallback();
+    fetchProducts()
+      .then((data) => {
+        let inputVal = input.value.toLowerCase();
 
         data.forEach((product) => {
-          if (product.productTitle.toLowerCase().includes(input)) {
-            let result = `
-                            <div class="card" data-id="${product.category.id}">
-                                <img src="${product.productImage}" alt="bike" class="product-image" />
-                                <h3 class="product-title">${product.productTitle}</h3>
-                                <h2 class="product-price">Price: ${product.price}</h2>
-                                <p class="product-category">Category: ${product.category.label}</p>
-                                <div class="row">
-                                  <label for="compare">Compare</label>
-                                  <input type="checkbox" class="compareProduct"/>
-                                </div>
-                            </div>
-                            `;
-            container.innerHTML += result;
-            container.removeChild(container.firstChild);
+          if (product.productTitle.toLowerCase().includes(inputVal)) {
+            let result = populateProduct(product);
+            bikesContainer.innerHTML += result;
           }
         });
       })
       .catch(function () {
         this.dataError = true;
+      })
+      .finally(function () {
+        fetchProductsAfterCallback();
       });
   }
-});
 
-// category dropdown
+  //input.addEventListener("keyup", filterResultsByAjaxRequest);
+  button.addEventListener("click", filterResultsByAjaxRequest);
+}
+initFilterResultsByAjaxRequest();
 
-const categoryDropdown = document.getElementById("bike-category");
-let lookup = {};
-let result = [];
+// populate categories in dropdown
+const categoryDropdown = document.querySelector(".js-bike-category");
+function populateCategoriesInDropdown() {
+  let lookup = {};
+  let result = [];
 
-fetch("./products.json")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Http Error " + response.status);
-    }
-    return response.json();
-  })
-  .then((json) => {
-    let data = json;
+  fetchProducts().then((data) => {
+    //redundant => parameter renamed to data
+    //let data = json;
 
     data.forEach((product) => {
       let category = product.category.label;
@@ -127,74 +125,66 @@ fetch("./products.json")
 
     result.forEach((product) => {
       let selections = `
-        <option value="${product}" class="dropdown-category">${product}</option>
-        `;
+          <option value="${product}" class="dropdown-category">${product}</option>
+          `;
       categoryDropdown.innerHTML += selections;
     });
   });
+}
+populateCategoriesInDropdown();
 
-// dropdown filter
-
-categoryDropdown.addEventListener("change", () => {
-  let selectedValue = document.getElementById("bike-category");
-  let input = selectedValue.value;
-
-  fetch("./products.json")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Http error " + response.status);
-      }
-      return response.json();
-    })
-    .then((json) => {
-      let data = json;
-      cardContainer[0].innerHTML = ``;
-      data.forEach((element) => {
-        if (input === element.category.label) {
-          let result = `
-                            <div class="card" data-id="${element.category.id}">
-                                <img src="${element.productImage}" alt="bike" class="product-image" />
-                                <h3 class="product-title">${element.productTitle}</h3>
-                                <h2 class="product-price">Price: ${element.price}</h2>
-                                <p class="product-category">Category: ${element.category.label}</p>
-                                <div class="row">
-                                  <label for="compare">Compare</label>
-                                  <input type="checkbox" class="compareProduct"/>
-                                </div>
-                            </div>
-                            `;
-          cardContainer[0].innerHTML += result;
-        }
+//init dropdown filter change event
+function dropdownFilter() {
+  categoryDropdown.addEventListener("change", () => {
+    let selectedValue = document.querySelector(".js-bike-category");
+    let input = selectedValue.value;
+    fetchProductsBeforeCallback();
+    fetchProducts()
+      .then((json) => {
+        let data = json;
+        bikesContainer.innerHTML = ``;
+        data.forEach((element) => {
+          if (input === element.category.label) {
+            let result = populateProduct(element);
+            bikesContainer.innerHTML += result;
+          }
+        });
+      })
+      .finally(function () {
+        fetchProductsAfterCallback();
       });
-    });
-});
+  });
+}
 
-// compare enable
-const radioChecked = document.getElementById("compareEnabled");
-const radioUnchecked = document.getElementById("compareDisabled");
-const compareProducts = document.getElementsByClassName("compareProduct");
+dropdownFilter();
 
-radioChecked.addEventListener("change", () => {
-  if (radioChecked.checked) {
-    Array.from(compareProducts).forEach((el) => {
-      el.disabled = false;
-    });
+// compare checkbox enable/disable
+function getCompareCheckboxes() {
+  return document.querySelectorAll(".js-compare-product");
+}
+function toggleCompareCheckboxes() {
+  let disable = false;
+  if (this.checked && this.value === "compare_enable") {
+    disable = false;
   }
-});
-
-radioUnchecked.addEventListener("change", () => {
-  if (radioUnchecked.checked) {
-    Array.from(compareProducts).forEach((el) => {
-      el.disabled = true;
-    });
+  if (this.checked && this.value === "compare_disable") {
+    disable = true;
   }
-});
 
-//compare checked products
+  getCompareCheckboxes().forEach((el) => {
+    el.disabled = disable;
+  });
+}
+function initEnableCompareCheckboxes() {
+  document.querySelectorAll(".js-compare-enable").forEach((radiobox) => {
+    radiobox.addEventListener("change", toggleCompareCheckboxes);
+  });
+}
+initEnableCompareCheckboxes();
 
 // Set the checked property of the checkboxes based on the value in local storage
 function setCheckboxStateFromLocalStorage() {
-  Array.from(compareProducts).forEach((checkbox) => {
+  getCompareCheckboxes().forEach((checkbox) => {
     const cardEl = checkbox.parentElement.parentElement;
     const dataId = cardEl.getAttribute("data-id");
     const isChecked = localStorage.getItem(dataId);
@@ -203,8 +193,8 @@ function setCheckboxStateFromLocalStorage() {
 }
 
 // Update local storage and set the checked property of the checkboxes on change
-setTimeout(() => {
-  Array.from(compareProducts).forEach((checkbox) => {
+function initCompare() {
+  getCompareCheckboxes().forEach((checkbox) => {
     checkbox.addEventListener("change", (event) => {
       const cardEl = checkbox.parentElement.parentElement;
       const dataId = cardEl.getAttribute("data-id");
@@ -218,31 +208,43 @@ setTimeout(() => {
   });
   // Call the function to set the checked property of the checkboxes on page load
   setCheckboxStateFromLocalStorage();
-}, 100);
+}
 
-const selectAll = document.getElementById("selectAll");
+//setTimeout(initCompare, 1000);
 
-selectAll.addEventListener("change", (e) => {
-  if (e.target.checked === true) {
-    for (let i = 0; i < compareProducts.length; i++) {
-      compareProducts[i].checked = true;
-      let dataId =
-        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
-      localStorage.setItem(dataId, "Test");
+// init select all functionality
+function initSelectAll() {
+  const selectAll = document.querySelector(".js-selectAll");
+
+  selectAll.addEventListener("change", (e) => {
+    const compareCheckboxes = getCompareCheckboxes();
+    if (e.target.checked === true) {
+      for (let i = 0; i < compareCheckboxes.length; i++) {
+        compareCheckboxes[i].checked = true;
+        let dataId =
+          compareCheckboxes[i].parentElement.parentElement.getAttribute(
+            "data-id"
+          );
+        localStorage.setItem(dataId, "Test");
+      }
+      localStorage.setItem("checkboxSelectAll", selectAll.checked);
+    } else {
+      for (let i = 0; i < compareCheckboxes.length; i++) {
+        compareCheckboxes[i].checked = false;
+        let dataId =
+          compareCheckboxes[i].parentElement.parentElement.getAttribute(
+            "data-id"
+          );
+        localStorage.removeItem(dataId);
+      }
+      // localStorage.setItem("checkboxSelectAll", (selectAll.checked = false));
+      localStorage.removeItem("checkboxSelectAll");
     }
-    localStorage.setItem("checkboxSelectAll", selectAll.checked);
-  } else {
-    for (let i = 0; i < compareProducts.length; i++) {
-      compareProducts[i].checked = false;
-      let dataId =
-        compareProducts[i].parentElement.parentElement.getAttribute("data-id");
-      localStorage.removeItem(dataId);
-    }
-    // localStorage.setItem("checkboxSelectAll", (selectAll.checked = false));
-    localStorage.removeItem("checkboxSelectAll");
-  }
-});
+  });
 
-addEventListener("load", () => {
-  selectAll.checked = localStorage.getItem("checkboxSelectAll");
-});
+  addEventListener("load", () => {
+    selectAll.checked = localStorage.getItem("checkboxSelectAll");
+  });
+}
+
+initSelectAll();
