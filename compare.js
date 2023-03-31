@@ -1,6 +1,6 @@
 import { loader, fetchProducts } from "./common.js";
 
-const compareContainer = document.getElementsByClassName("compare-list");
+const compareContainer = document.querySelector(".js-compare-list");
 
 function getLocalStoareKeys() {
   let localStorageKeys = [];
@@ -11,10 +11,10 @@ function getLocalStoareKeys() {
   return localStorageKeys;
 }
 
-loader.addLoader(".compare-list");
+loader.addLoader(".js-compare-list");
 
 function setFirstColumnOfCompareProductTable() {
-  compareContainer[0].innerHTML = `
+  compareContainer.innerHTML = `
   <div class="card-compare-description">
     <div class="compare-image">
     </div>
@@ -37,21 +37,21 @@ function generateSingleCompareProduct(element) {
                 <div class="item">${element.productTitle}</div>
                 <div class="item">${element.price} $</div>
                 <div class="item">${element.category.label}</div>
-                <button class="remove-item">Remove from wishlist</button>
+                <button class="remove-item js-remove-item">Remove from wishlist</button>
             </div>
             `;
   return result;
 }
 
 function appendCompareProduct(product) {
-  compareContainer[0].innerHTML += product;
+  compareContainer.innerHTML += product;
 }
 
 function populateWishListProducts() {
   return fetchProducts().then((json) => {
     let data = json;
     setFirstColumnOfCompareProductTable();
-    loader.addLoader(".compare-list");
+    loader.addLoader(".js-compare-list");
     setLengthOfCompareTable();
     getLocalStoareKeys().forEach((key) => {
       data.forEach((element) => {
@@ -65,13 +65,12 @@ function populateWishListProducts() {
 }
 
 populateWishListProducts().finally(function () {
-  loader.removeLoader(".compare-list");
+  loader.removeLoader(".js-compare-list");
   removeFromWishList();
 });
 
 function removeFromWishList() {
-  const removeFromWishlistButton =
-    document.getElementsByClassName("remove-item");
+  const removeFromWishlistButton = document.querySelectorAll(".js-remove-item");
   Array.from(removeFromWishlistButton).forEach((button) => {
     button.addEventListener("click", (element) => {
       const itemToRemove = element.srcElement.parentElement;
