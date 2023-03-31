@@ -9,7 +9,7 @@
   </head>
   <body>
     <h1>Product page</h1>
-    <div class="filter-container">
+    <div class="filter-container js-filter-container">
       <div class="centered-filters">      
           <a href="./compare.html">Compare</a>
           <br />
@@ -26,17 +26,18 @@
 
           <input
             id="asyncSearch"
+            class="js-asyncSearch"
             type="text"
             name="search"
             placeholder="Async Search products.."
           />
-          <button id="search-button">Search</button>
+          <button id="search-button" class="js-search-button">Search</button>
           
           <br />
           <br />
           <!-- select category -->
           <label for="bike">Choose category:</label>
-          <select name="bike" id="bike-category"></select>
+          <select name="bike" id="bike-category" class="js-bike-category"></select>
           <br />
           <br />
           
@@ -52,7 +53,7 @@
           </div>
           <br />
           <label for="selectAll">Select all</label>
-          <input type="checkbox" name="selectAll" id="selectAll" data-id="selectAll">
+          <input type="checkbox" name="selectAll" id="selectAll" class="js-selectAll" data-id="selectAll">
       </div>
     </div>
     
