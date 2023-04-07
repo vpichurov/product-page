@@ -38,6 +38,10 @@ function generateSingleCompareProduct(element) {
                 <div class="item">${element.price} $</div>
                 <div class="item">${element.category.label}</div>
                 <button class="remove-item js-remove-item">Remove from wishlist</button>
+                <div class="btn-container">
+                  <button class="move-btn js-move-btn-prev"><</button>
+                  <button class="move-btn js-move-btn-next">></button>
+                </div>
             </div>
             `;
   return result;
@@ -45,6 +49,30 @@ function generateSingleCompareProduct(element) {
 
 function appendCompareProduct(product) {
   compareContainer.innerHTML += product;
+}
+
+function disableFirstAndLastBtns() {
+  const elementsNodeList = document.querySelectorAll(".card-compare");
+  //disable first button
+  elementsNodeList[0].lastElementChild.firstElementChild.setAttribute(
+    "disabled",
+    true
+  );
+  //disable last button
+  elementsNodeList[
+    elementsNodeList.length - 1
+  ].lastElementChild.lastElementChild.setAttribute("disabled", true);
+}
+
+function restoreBtnsState() {
+  const elementsNodeList = document.querySelectorAll(".card-compare");
+  Array.from(elementsNodeList).forEach((element) => {
+    //reset first button
+    element.lastElementChild.firstElementChild.removeAttribute("disabled");
+
+    //reset last button
+    element.lastElementChild.lastElementChild.removeAttribute("disabled");
+  });
 }
 
 function populateWishListProducts() {
@@ -66,6 +94,9 @@ function populateWishListProducts() {
 
 populateWishListProducts().finally(function () {
   loader.removeLoader(".js-compare-list");
+  disableFirstAndLastBtns();
+  initMoveBeforeBtn();
+  initMoveAfterBtn();
   removeFromWishList();
 });
 
@@ -83,5 +114,63 @@ function removeFromWishList() {
       }
       itemToRemove.remove();
     });
+  });
+}
+
+function moveItemBefore() {
+  const el = this.parentElement.parentElement;
+  const parrentContainer = this.parentElement.parentElement.parentElement;
+  const list = this.parentElement.parentElement.parentElement.children;
+  const removeElementDataId = el.getAttribute("data-id");
+  let removeElementIndex = 0;
+
+  Array.from(list).forEach((element, index) => {
+    const elementDataId = element.getAttribute("data-id");
+    if (elementDataId === removeElementDataId) {
+      removeElementIndex = index;
+    }
+  });
+
+  let desiredDestination = removeElementIndex - 1;
+  let beforeElement = list[desiredDestination];
+  let deletedElement = parrentContainer.removeChild(el);
+  parrentContainer.insertBefore(deletedElement, beforeElement);
+  restoreBtnsState();
+  disableFirstAndLastBtns();
+}
+
+function initMoveBeforeBtn() {
+  const btnPrev = document.querySelectorAll(".js-move-btn-prev");
+  btnPrev.forEach((btn) => {
+    btn.addEventListener("click", moveItemBefore);
+  });
+}
+
+function moveItemAfter() {
+  const el = this.parentElement.parentElement;
+  const parentContainer = this.parentElement.parentElement.parentElement;
+  const list = this.parentElement.parentElement.parentElement.children;
+  const removeElementDataId = el.getAttribute("data-id");
+  let removeElementIndex = 0;
+
+  Array.from(list).forEach((element, index) => {
+    const elementDataId = element.getAttribute("data-id");
+    if (elementDataId === removeElementDataId) {
+      removeElementIndex = index;
+    }
+  });
+
+  let desiredDestination = removeElementIndex + 1;
+  let afterElement = list[desiredDestination];
+  let deletedElement = parentContainer.removeChild(el);
+  afterElement.after(deletedElement);
+  restoreBtnsState();
+  disableFirstAndLastBtns();
+}
+
+function initMoveAfterBtn() {
+  const btnNext = document.querySelectorAll(".js-move-btn-next");
+  btnNext.forEach((btn) => {
+    btn.addEventListener("click", moveItemAfter);
   });
 }
