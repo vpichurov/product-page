@@ -17,7 +17,7 @@
   justify-content: center;
 }
 
-.centered-filters{
+.centered-filters {
   width: 50%;
 }
 
@@ -48,6 +48,12 @@
   height: 200px;
   background: url("./Loading_icon.gif") no-repeat center;
   z-index: 999;
+}
+
+.container {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: flex-start;
 }
 
 .row {
@@ -115,4 +121,16 @@ a:hover,
 a:active {
   background-color: transparent;
   box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.75);
+}
+
+.btn-container {
+  margin-top: 0.5em;
+  /* text-align: center; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.move-btn {
+  padding: 0.5em 5em;
 }
