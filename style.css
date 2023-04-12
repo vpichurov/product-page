@@ -134,3 +134,15 @@ a:active {
 .move-btn {
   padding: 0.5em 5em;
 }
+
+.yellow-bg {
+  background-color: yellow;
+}
+
+.green-bg {
+  background-color: green;
+}
+
+.red-bg {
+  background-color: red;
+}
