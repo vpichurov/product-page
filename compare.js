@@ -32,10 +32,10 @@ function setLengthOfCompareTable() {
 
 function generateSingleCompareProduct(element) {
   let result = `
-            <div class="card-compare" data-id="${element.category.id}">
+            <div class="card-compare js-card-compare" data-id="${element.category.id}">
                 <img src="${element.productImage}" alt="productPicture" class="compare-image" />
                 <div class="item">${element.productTitle}</div>
-                <div class="item">${element.price} $</div>
+                <div class="item js-price">${element.price}</div>
                 <div class="item">${element.category.label}</div>
                 <button class="remove-item js-remove-item">Remove from wishlist</button>
                 <div class="btn-container">
@@ -97,6 +97,7 @@ populateWishListProducts().finally(function () {
   disableFirstAndLastBtns();
   initMoveBeforeBtn();
   initMoveAfterBtn();
+  handlePriceCompare();
   removeFromWishList();
 });
 
@@ -136,6 +137,7 @@ function moveItemBefore() {
   let deletedElement = parrentContainer.removeChild(el);
   parrentContainer.insertBefore(deletedElement, beforeElement);
   restoreBtnsState();
+  handlePriceCompare();
   disableFirstAndLastBtns();
 }
 
@@ -165,6 +167,7 @@ function moveItemAfter() {
   let deletedElement = parentContainer.removeChild(el);
   afterElement.after(deletedElement);
   restoreBtnsState();
+  handlePriceCompare();
   disableFirstAndLastBtns();
 }
 
@@ -173,4 +176,48 @@ function initMoveAfterBtn() {
   btnNext.forEach((btn) => {
     btn.addEventListener("click", moveItemAfter);
   });
+}
+
+// compare and color indication of price
+function restoreCompareClasses(elementPriceField) {
+  if (elementPriceField.classList.contains("green-bg")) {
+    return elementPriceField.classList.remove("green-bg");
+  } else if (elementPriceField.classList.contains("red-bg")) {
+    return elementPriceField.classList.remove("red-bg");
+  } else {
+  }
+}
+
+function identifyFirstElement(firstProduct) {
+  if (firstProduct.classList.contains("green-bg")) {
+    return firstProduct.classList.replace("green-bg", "yellow-bg");
+  } else if (firstProduct.classList.contains("red-bg")) {
+    return firstProduct.classList.replace("red-bg", "yellow-bg");
+  } else {
+    return firstProduct.classList.add("yellow-bg");
+  }
+}
+
+function priceCompare(firstProduct, secondProduct) {
+  let firstProductPriceField = firstProduct.children[2];
+  let secondProductPriceField = secondProduct.children[2];
+  let firstProductPrice = Number(firstProductPriceField.innerHTML);
+  let secondProductPrice = Number(secondProductPriceField.innerHTML);
+
+  identifyFirstElement(firstProductPriceField);
+
+  if (firstProductPrice > secondProductPrice) {
+    restoreCompareClasses(secondProductPriceField);
+    return secondProductPriceField.classList.add("green-bg");
+  } else {
+    restoreCompareClasses(secondProductPriceField);
+    return secondProductPriceField.classList.add("red-bg");
+  }
+}
+
+function handlePriceCompare() {
+  const cardNodeList = document.querySelectorAll(".js-card-compare");
+  for (let i = 1; i < cardNodeList.length; i++) {
+    priceCompare(cardNodeList[0], cardNodeList[i]);
+  }
 }
