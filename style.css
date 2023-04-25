@@ -81,14 +81,22 @@
   max-width: 300px;
 }
 
-.card-compare-description {
+/* .card-compare-description {
   display: flex;
   flex-direction: column;
-}
+} */
 
 .item {
   text-align: center;
 }
+
+.card-compare > .item {
+  padding: 0.7em;
+}
+
+/* .card-compare-description > .item {
+  padding: 5px;
+} */
 
 .item:nth-child(even) {
   background-color: lightgray;
@@ -136,13 +144,24 @@ a:active {
 }
 
 .yellow-bg {
-  background-color: yellow;
+  background-color: yellow !important;
 }
 
 .green-bg {
-  background-color: green;
+  background-color: green !important;
 }
 
 .red-bg {
-  background-color: red;
+  background-color: red !important;
+}
+
+.description-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.vrtcl-btn-container {
+  display: flex;
+  flex-direction: column;
 }
