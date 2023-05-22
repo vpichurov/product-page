@@ -1,13 +1,15 @@
-import { loader, fetchProducts } from "./common.js";
+import { loader, fetchProducts, localStorageFunctions } from "./common.js";
 
 const COMPARE_LIST_CLASS = ".js-compare-list";
 const compareContainer = document.querySelector(COMPARE_LIST_CLASS);
 
 function getLocalStoareKeys() {
   let localStorageKeys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    localStorageKeys.push(key);
+  const arrayLocalStorageData = Object.keys(
+    localStorageFunctions.localStorageItems
+  );
+  for (let i = 0; i < arrayLocalStorageData.length; i++) {
+    localStorageKeys.push(arrayLocalStorageData[i]);
   }
   return localStorageKeys;
 }
@@ -107,17 +109,24 @@ populateWishListProducts().finally(function () {
 
 function removeFromWishList() {
   const removeFromWishlistButton = document.querySelectorAll(".js-remove-item");
+  const arrayLocalStorageData = Object.keys(
+    localStorageFunctions.localStorageItems
+  );
+
   Array.from(removeFromWishlistButton).forEach((button) => {
     button.addEventListener("click", (element) => {
       const itemToRemove = element.srcElement.parentElement;
       const dataId = itemToRemove.getAttribute("data-id");
 
-      for (let i = 0; i < localStorage.length; i++) {
-        if (dataId === localStorage.key(i)) {
-          localStorage.removeItem(dataId);
+      for (let i = 0; i < arrayLocalStorageData.length; i++) {
+        if (dataId === arrayLocalStorageData[i]) {
+          localStorageFunctions.removeFromLocalStorage("compareList", dataId);
         }
       }
       itemToRemove.remove();
+      //update first product color and button left
+      handlePriceCompare();
+      disableFirstAndLastBtns();
     });
   });
 }

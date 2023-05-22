@@ -1,4 +1,4 @@
-import { loader, fetchProducts } from "./common.js";
+import { loader, fetchProducts, localStorageFunctions } from "./common.js";
 
 const bikesContainer = document.querySelector(".js-card-container");
 
@@ -52,7 +52,6 @@ populateBikeList();
 function showHideResultsBySearchPhrase() {
   let input = this.value;
   input.toLowerCase();
-  //TODO replace document.getElementsByClassName s querySelectorAll s parent js-card-container
   const productsCard = document.querySelectorAll(".js-card");
   const productName = document.querySelectorAll(".js-product-title");
 
@@ -98,8 +97,6 @@ function initFilterResultsByAjaxRequest() {
         fetchProductsAfterCallback();
       });
   }
-
-  //input.addEventListener("keyup", filterResultsByAjaxRequest);
   button.addEventListener("click", filterResultsByAjaxRequest);
 }
 initFilterResultsByAjaxRequest();
@@ -111,9 +108,6 @@ function populateCategoriesInDropdown() {
   let result = [];
 
   fetchProducts().then((data) => {
-    //redundant => parameter renamed to data
-    //let data = json;
-
     data.forEach((product) => {
       let category = product.category.label;
 
@@ -159,9 +153,6 @@ function dropdownFilter() {
 dropdownFilter();
 
 // compare checkbox enable/disable
-function getCompareCheckboxes() {
-  return document.querySelectorAll(".js-compare-product");
-}
 function toggleCompareCheckboxes() {
   let disable = false;
   if (this.checked && this.value === "compare_enable") {
@@ -182,69 +173,78 @@ function initEnableCompareCheckboxes() {
 }
 initEnableCompareCheckboxes();
 
-// Set the checked property of the checkboxes based on the value in local storage
-function setCheckboxStateFromLocalStorage() {
-  getCompareCheckboxes().forEach((checkbox) => {
-    const cardEl = checkbox.parentElement.parentElement;
-    const dataId = cardEl.getAttribute("data-id");
-    const isChecked = localStorage.getItem(dataId);
-    checkbox.checked = isChecked || false; // Default to false if the value is null or undefined
+// init select all functionality
+function initSelectAll() {
+  const selectAll = document.querySelector(".js-selectAll");
+  selectAll.addEventListener("change", (e) => {
+    const compareCheckboxes = getCompareCheckboxes();
+    if (e.target.checked === true) {
+      //add selectAll button to localstorage
+      localStorageFunctions.localStorageItems["selectAll"] = true;
+      for (let i = 0; i < compareCheckboxes.length; i++) {
+        compareCheckboxes[i].checked = true;
+        var event = new Event("change");
+        compareCheckboxes[i].dispatchEvent(event);
+      }
+    } else {
+      // remove selectAll button from localStorage
+      localStorageFunctions.localStorageItems["selectAll"] = false;
+      for (let i = 0; i < compareCheckboxes.length; i++) {
+        compareCheckboxes[i].checked = false;
+        var event = new Event("change");
+        compareCheckboxes[i].dispatchEvent(event);
+      }
+      localStorage.removeItem("checkboxSelectAll");
+    }
+  });
+
+  addEventListener("load", () => {
+    selectAll.checked = localStorageFunctions.localStorageItems.selectAll;
   });
 }
+initSelectAll();
 
-// Update local storage and set the checked property of the checkboxes on change
 function initCompare() {
   getCompareCheckboxes().forEach((checkbox) => {
     checkbox.addEventListener("change", (event) => {
       const cardEl = checkbox.parentElement.parentElement;
       const dataId = cardEl.getAttribute("data-id");
+      const nameEl = cardEl.children[1].innerHTML;
 
       if (event.target.checked) {
-        localStorage.setItem(dataId, "Test");
+        if (!localStorageFunctions.localStorageItems[dataId]) {
+          localStorageFunctions.addToLocalStorage(
+            "compareList",
+            dataId,
+            nameEl
+          );
+        }
       } else {
-        localStorage.removeItem(dataId);
+        if (localStorageFunctions.localStorageItems.hasOwnProperty(dataId)) {
+          localStorageFunctions.removeFromLocalStorage("compareList", dataId);
+        }
       }
     });
   });
   // Call the function to set the checked property of the checkboxes on page load
   setCheckboxStateFromLocalStorage();
 }
+initCompare();
 
-//setTimeout(initCompare, 1000);
-
-// init select all functionality
-function initSelectAll() {
-  const selectAll = document.querySelector(".js-selectAll");
-
-  selectAll.addEventListener("change", (e) => {
-    const compareCheckboxes = getCompareCheckboxes();
-    if (e.target.checked === true) {
-      for (let i = 0; i < compareCheckboxes.length; i++) {
-        compareCheckboxes[i].checked = true;
-        let dataId =
-          compareCheckboxes[i].parentElement.parentElement.getAttribute(
-            "data-id"
-          );
-        localStorage.setItem(dataId, "Test");
-      }
-      localStorage.setItem("checkboxSelectAll", selectAll.checked);
-    } else {
-      for (let i = 0; i < compareCheckboxes.length; i++) {
-        compareCheckboxes[i].checked = false;
-        let dataId =
-          compareCheckboxes[i].parentElement.parentElement.getAttribute(
-            "data-id"
-          );
-        localStorage.removeItem(dataId);
-      }
-      // localStorage.setItem("checkboxSelectAll", (selectAll.checked = false));
-      localStorage.removeItem("checkboxSelectAll");
-    }
-  });
-
-  addEventListener("load", () => {
-    selectAll.checked = localStorage.getItem("checkboxSelectAll");
+// Set the checked property of the checkboxes based on the value in local storage
+function setCheckboxStateFromLocalStorage() {
+  getCompareCheckboxes().forEach((checkbox) => {
+    const cardEl = checkbox.parentElement.parentElement;
+    const dataId = cardEl.getAttribute("data-id");
+    const isChecked =
+      localStorageFunctions.localStorageItems.hasOwnProperty(dataId);
+    checkbox.checked = isChecked || false; // Default to false if the value is null or undefined
   });
 }
+// Set the checked property of the checkboxes based on the value in local storage
+setCheckboxStateFromLocalStorage();
 
-initSelectAll();
+// compare checkbox enable/disable
+function getCompareCheckboxes() {
+  return document.querySelectorAll(".js-compare-product");
+}
